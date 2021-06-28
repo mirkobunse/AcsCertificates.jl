@@ -32,6 +32,14 @@ You can alter the configurations in the `conf/` directory, e.g. try different se
 
 ## Using our certificates elsewhere
 
-This project can become a dependency in any other Julia project. Certificates can then be created by simply calling the constructor `Certificate(L, y_h, y; kwargs...)` with a loss function `L`, predictions `y_h`, and the validation ground-truths `y`. The keyword arguments provide additional parameters like delta and class weights; all details are given in the documentation of the construction. Many decomposable loss functions are already available through [the LossFunctions.jl package](https://github.com/JuliaML/LossFunctions.jl).
+This project can become a dependency in any other Julia project. Certificates can then be created by simply calling the constructor `Certificate(L, y_h, y; kwargs...)` with a loss function `L`, predictions `y_h`, and the validation ground-truths `y`. The keyword arguments provide additional parameters like delta and class weights. Many decomposable loss functions are already available through [the LossFunctions.jl package](https://github.com/JuliaML/LossFunctions.jl).
+
+```julia
+# let y_val be validation labels and y_h be corresponding predictions
+using AcsCertificates, LossFunctions
+c = Certificate(ZeroOneLoss(), y_h, y_val)
+
+?Certificate # inspect the documentation
+```
 
 We commit ourselves to writing thin wrappers for Python and the command line to make ACS certification easily accessible in other programming languages, as well.
