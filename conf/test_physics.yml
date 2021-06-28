@@ -1,0 +1,8 @@
+# see conf/physics.yml for a documentation of these settings
+
+delta:
+  - 0.05
+
+rskf:
+  n_repeats: 1
+  random_state: 876

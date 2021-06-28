@@ -1,0 +1,43 @@
+# configuration of the tightness experiment from sections 3.1 and B.1.
+
+# which data sets to query from the imblearn package
+data:
+  m_min: 500 # minimum number of minority samples
+  nF: 100 # maximum number of features
+
+# which classifiers to train
+clf:
+  - sklearn.tree.DecisionTreeClassifier
+  - sklearn.linear_model.LogisticRegression
+
+# which loss to certify
+loss:
+  - ZeroOneLoss
+  - HingeLoss
+  - L1DistLoss
+  - L2DistLoss
+
+# parameters of the certificate
+epsilon:
+  - 0.01
+  - 0.05
+  - 0.1
+delta:
+  - 0.01
+  - 0.05
+  - 0.1
+
+weight: # class weights are...
+  - uniform # ...equal for all classes
+  - sqrt # proportional to sqrt(1/p(Y))
+
+# how to sub-sample the test set
+pY_tst:
+  l: 0.01 # lowest p_tst(Y)
+  u: 0.5 # largest p_tst(Y)
+  n: 10 # number of logarithmically equidistant steps
+
+# parameters for a RepeatedStratifiedKFold
+rskf:
+  n_repeats: 3 # yields 9 repetitions due to n_splits=3
+  random_state: 876

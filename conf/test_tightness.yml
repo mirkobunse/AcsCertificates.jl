@@ -1,0 +1,34 @@
+# see conf/tightness.yml for a documentation of these settings
+
+data:
+  m_min: 500
+  nF: 16
+
+clf:
+  - sklearn.tree.DecisionTreeClassifier
+  - sklearn.linear_model.LogisticRegression
+
+loss:
+  - ZeroOneLoss
+  - HingeLoss
+  - L1DistLoss
+  - L2DistLoss
+
+epsilon:
+  - 0.01
+  - 0.1
+delta:
+  - 0.05
+
+weight:
+  - uniform
+  - sqrt
+
+pY_tst:
+  l: 0.01
+  u: 0.5
+  n: 10
+
+rskf:
+  n_repeats: 1
+  random_state: 876

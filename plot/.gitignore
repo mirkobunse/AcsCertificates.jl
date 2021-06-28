@@ -1,0 +1,9 @@
+*.aux
+*.csv
+*.dat
+*.lof
+*.log
+*.lot
+*.out
+*.pdf
+*.tex
