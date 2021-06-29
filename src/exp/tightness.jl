@@ -1,7 +1,7 @@
 """
     tightness(config_path, crt_path, val_path, tst_path)
 
-Conduct the tightness experiment from sections 3.1 and B.1.
+Conduct the tightness experiment from Sec. 3.1 and Tab. 1.
 """
 function tightness(config_path, crt_path, val_path, tst_path)
     config = parsefile(config_path)

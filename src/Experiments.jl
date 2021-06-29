@@ -15,7 +15,7 @@ using
     ScikitLearn,
     StatsBase
 
-include("exp/tightness.jl") # see sections 3.1 and B.1
-include("exp/physics.jl") # see sections 3.2 and B.2
+include("exp/tightness.jl") # see Sec. 3.1 and Tab. 1
+include("exp/physics.jl") # see Sec. 3.2 and Tab. 2
 
 end # module

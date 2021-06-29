@@ -1,7 +1,7 @@
 """
     physics(config_path, results_path)
 
-Conduct the astro-particle physics experiment from sections 3.2 and B.2.
+Conduct the astro-particle physics experiment from Sec. 3.2 and Tab. 2.
 """
 function physics(config_path, results_path)
     config = parsefile(config_path)

@@ -1,4 +1,4 @@
-# configuration of the tightness experiment from sections 3.1 and B.1.
+# configuration of the tightness experiment from Sec. 3.1 and Tab. 1.
 
 # which data sets to query from the imblearn package
 data:

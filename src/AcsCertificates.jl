@@ -44,7 +44,7 @@ using .Plots
 """
     tightness(config_path, output_path; kwargs...)
 
-Conduct the tightness experiment from sections 3.1 and B.1 and generate
+Conduct the tightness experiment from Sec. 3.1 and Tab. 1 and generate
 LaTeX plots and tables from the results.
 """
 function tightness(config_path, output_path;
@@ -58,7 +58,7 @@ end
 """
     physics(config_path, output_path; kwargs...)
 
-Conduct the astro-particle physics experiment from sections 3.2 and B.2
+Conduct the astro-particle physics experiment from Sec. 3.2 and Tab. 2
 and generate a LaTeX table from the results.
 """
 function physics(config_path, output_path;
