@@ -1,6 +1,16 @@
 # Certification of Model Robustness in Active Class Selection
 
-Supplementary material for our paper at ECML-PKDD 2021. Please see `supplement.pdf` for all plots that are generated here.
+Supplementary material for our submission to IAL 2021 and for our accepted paper at ECML-PKDD 2021.
+
+
+## Interactive Adaptive Learning (IAL) 2021
+
+We have added a build target for the CD diagrams presented in our IAL submission. Please see the section "Reproducing all plots" below for the details.
+
+
+## ECML-PKDD 2021
+
+Please see `supplement.pdf` for all plots we generated for our ECML-PKDD paper. Also check out [the release for this contribution](https://github.com/mirkobunse/AcsCertificates.jl/releases/tag/v0.1.0).
 
 ```bibtex
 @InProceedings{bunse2021certification,
@@ -18,7 +28,10 @@ Supplementary material for our paper at ECML-PKDD 2021. Please see `supplement.p
 
 **Preliminaries:** You need to have `julia` and `pdflatex` installed. We conducted the experiments with Julia v1.5 and TexLive on Ubuntu.
 
-From there on, simply calling `make` will generate a copy of the `supplement.pdf` in the `plot/` directory in about 3 hours.
+From there on, ...
+
+- simply calling `make ecml21` will generate a copy of the `supplement.pdf` in the `plot/` directory in about 3 hours.
+- calling `make ial21` will take about 1.5 hours to produce the CD diagrams of our IAL submission.
 
 **Caution:** The experiments will download [the open FACT data set](https://factdata.app.tu-dortmund.de/), which is about 5GB in size.
 

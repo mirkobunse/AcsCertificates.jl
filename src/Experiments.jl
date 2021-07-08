@@ -17,5 +17,6 @@ using
 
 include("exp/tightness.jl") # see Sec. 3.1 and Tab. 1
 include("exp/physics.jl") # see Sec. 3.2 and Tab. 2
+include("exp/acquisition.jl") # IAL workshop
 
 end # module

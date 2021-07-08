@@ -1,0 +1,39 @@
+# see conf/acquisition.yml for a documentation of these settings
+
+data:
+  m_min: 500
+  nF: 16
+
+strategy:
+  - certification
+  - inverse
+  - improvement
+  - redistriction
+  - uniform
+  - proportional
+
+batchsize: 100
+n_batches: 5
+
+pY_tst:
+  l: 0.1
+  u: 0.3
+  n: 2
+
+clf:
+  - sklearn.linear_model.LogisticRegression
+
+loss:
+  - ZeroOneLoss
+
+epsilon:
+  - 0.05
+delta:
+  - 0.05
+
+weight:
+  - uniform
+
+rskf:
+  n_repeats: 1
+  random_state: 876

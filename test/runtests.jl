@@ -60,15 +60,23 @@ function certify(t::TestCase)
     println(stdout, "") # empty line before each test
     c = Certificates.Certificate(L, t.y_h, t.y; w_y=t.w_y)
     Base.show(stdout, "text/plain", c)
+    acquire(Certificates.Certificate(L, t.y_h, t.y; w_y=t.w_y, allow_onesided=false))
 end
 
 N = 100
 PRIORS = [
     (.2, .8),
     (2., 8.),
+    (8., 2.),
     (.5, .5),
     (5., 5.)
 ]
+
+acquire(c::Certificates.Certificate) = for (α, β) in PRIORS
+    println(stdout,
+        "α=$α, β=$β => ",
+        Certificates.suggest_acquisition(c, N, α, β))
+end
 
 # conduct tests
 @testset "LARGE sample, MODERATE loss difference" for t in [
@@ -125,5 +133,11 @@ end
         TestCase(L, 200, .5, .1, .2),
         TestCase(L, 200, .1, .1, .2),
         TestCase(L, 200, .9, .1, .2)]
+    certify(t)
+end
+@testset "TINY sample, MODERATE loss difference (LABELS SWITCHED)" for t in [
+        TestCase(L, 200, .5, .2, .1),
+        TestCase(L, 200, .9, .2, .1),
+        TestCase(L, 200, .1, .2, .1)]
     certify(t)
 end

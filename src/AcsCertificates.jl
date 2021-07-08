@@ -32,7 +32,16 @@ using .Data
 
 include("Certificates.jl")
 using .Certificates
-export Certificate, is_feasible, is_onesided, p_range, max_Δp, optimize_Δℓ, empirical_classwise_risk
+export
+    beta_parameters,
+    Certificate,
+    empirical_classwise_risk,
+    is_feasible,
+    is_onesided,
+    max_Δp,
+    optimize_Δℓ,
+    p_range,
+    suggest_acquisition
 
 include("Experiments.jl")
 using .Experiments
@@ -65,6 +74,18 @@ function physics(config_path, output_path;
         results_path = "plot/.physics.csv")
     Experiments.physics(config_path, results_path)
     Plots.physics(results_path, output_path)
+end
+
+"""
+    acquisition(config_path, output_path; kwargs...)
+
+Conduct the acquisition experiment from our IAL workshop submission
+and generate a LaTeX table from the results.
+"""
+function acquisition(config_path, output_path;
+        results_path = "plot/.acquisition.csv")
+    Experiments.acquisition(config_path, results_path)
+    Plots.acquisition(results_path, output_path)
 end
 
 
