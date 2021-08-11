@@ -43,5 +43,5 @@ weight: # class weights are...
 
 # parameters for a RepeatedStratifiedKFold
 rskf:
-  n_repeats: 3 # yields 15 repetitions due to n_splits=3
+  n_repeats: 5 # yields 15 repetitions due to n_splits=3
   random_state: 876

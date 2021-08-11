@@ -27,9 +27,11 @@ function acquisition(results_path, output_path)
     )
     df = semijoin(df, cnt, on=[:data, :batch, :pY_tst])
 
-    # one CD diagram per pY_tst value
-    groupplot = GroupPlot(1, 2; groupStyle="vertical sep=15mm")
+    # one CD diagram and one KL divergence diagram per pY_tst value
+    groupplot = GroupPlot(2, 2; groupStyle="vertical sep=15mm, horizontal sep=50mm")
     for (key_pY, sdf_pY) in pairs(groupby(df, :pY_tst))
+
+        # sequence of CD diagrams
         sequence = Pair{String, Vector{Pair{String, Vector}}}[]
         for (key, sdf) in pairs(groupby(sdf_pY, gid))
             n_data = length(unique(sdf[!, :data]))
@@ -67,6 +69,34 @@ function acquisition(results_path, output_path)
             "width=\\axisdefaultwidth, height=\\axisdefaultheight"
         ], ", ")
         push!(groupplot, plot)
+
+        # KL divergence to proportional sampling
+        kl_plot = Axis(style = join([
+            "title={KL divergence to \$p_\\mathcal{T}=$(round(key_pY.pY_tst; digits=1))\$}",
+            "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
+            "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
+            "xtick={1,3,5,7}"
+        ], ", "))
+        for (key, sdf) in pairs(groupby(sdf_pY, vcat(setdiff(gid, [:batch]), [:strategy])))
+            if key.strategy == "proportional"
+                continue # KL divergence is usually zero, so that ymode=log does not work in general
+            end
+            sdf = combine(
+                groupby(
+                    sdf[sdf[!, :batch].<=8, :],
+                    vcat(gid, [:strategy])
+                ),
+                :kl_prop => StatsBase.mean => :kl_prop,
+                :kl_prop => StatsBase.std => :kl_prop_std
+            )
+            push!(kl_plot, PGFPlots.Plots.Linear(
+                sdf[!, :batch],
+                sdf[!, :kl_prop],
+                legendentry=string(key.strategy),
+                errorBars=PGFPlots.ErrorBars(y=sdf[!, :kl_prop_std])
+            ))
+        end
+        push!(groupplot, kl_plot)
     end
 
     PGFPlots.resetPGFPlotsPreamble()
