@@ -2,7 +2,7 @@
     module SigmaTest
 
 A thin wrapper for the FACT standard analysis that is implemented at
-`https://bitbucket.org/mbunse/sigma-test`. Greatly acknowledged!
+`https://bitbucket.org/mbunse/sigma-test`.
 """
 module SigmaTest
 
