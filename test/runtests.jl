@@ -54,8 +54,22 @@ end
 TestCase(L::SupervisedLoss, args...) =
     error("random_data not yet implemented for $L")
 
+L = ZeroOneLoss() # all tests use the ZeroOneLoss
+
+@testset "Onesided Δℓ_Result typing" begin
+    for t in [
+            TestCase(L, 200, .1, .19, .2), # labels not switched
+            TestCase(L, 200, .1, .2, .19) # labels SWITCHED
+            ]
+        c = Certificates.Certificate(L, t.y_h, t.y; w_y=t.w_y)
+        Base.show(stdout, "text/plain", c)
+        @test any(isnan.(c.Δℓ.ϵ_y)) # one of the ϵ values should be NaN (one-sided result)
+        @test any(isfinite.(c.Δℓ.ϵ_y)) # and one should be a finite real number
+        @test typeof(c.Δℓ) == Certificates.Δℓ_Result{Certificates.OneSided_Δℓ_MinMax}
+    end
+end
+
 # how to test: compute certificates and print them to the console
-L = ZeroOneLoss()
 function certify(t::TestCase)
     println(stdout, "") # empty line before each test
     c = Certificates.Certificate(L, t.y_h, t.y; w_y=t.w_y)

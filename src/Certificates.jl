@@ -267,7 +267,7 @@ function optimize_Δℓ(
     end
 
     if reorder
-        best_Δℓ = Δℓ_Result{T}(
+        best_Δℓ = typeof(best_Δℓ)(
             best_Δℓ.ϵ_y[[2, 1]],
             best_Δℓ.δ_y[[2, 1]],
             best_Δℓ.empirical_ℓ_y[[2, 1]],
