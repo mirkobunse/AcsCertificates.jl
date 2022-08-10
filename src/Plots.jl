@@ -12,7 +12,7 @@ using
     StatsBase,
     TikzPictures
 
-detokenize(x::String) = replace(x, "_" => "\\_") # escape underscores
+detokenize(x::AbstractString) = replace(x, "_" => "\\_") # escape underscores
 detokenize(x::Real) = string(round(x; digits=4)) # round numbers
 
 include("plt/tightness.jl") # see Sec. 3.1 and Tab. 1

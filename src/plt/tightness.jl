@@ -100,9 +100,13 @@ function tightness(crt_path, val_path, tst_path, output_path)
             ) # add one page with the current groupplot
         end
     end
-    paper_groupplot = GroupPlot(2, 1; groupStyle = "horizontal sep=18mm")
-    append!(paper_groupplot, paper_axes)
-    push!(document, PGFPlots.plot(paper_groupplot); caption = "Fig. 4 in our paper")
+    if isdefined(paper_axes, 1) && isdefined(paper_axes, 2)
+        paper_groupplot = GroupPlot(2, 1; groupStyle = "horizontal sep=18mm")
+        append!(paper_groupplot, paper_axes)
+        push!(document, PGFPlots.plot(paper_groupplot); caption = "Fig. 4 in our paper")
+    else
+        @warn "Ignoring Fig. 4 in our paper, for which the results are missing"
+    end
 
     # export the plots as a temporary .tex file
     tmp_path = tempname() * ".tex" # temporary path
