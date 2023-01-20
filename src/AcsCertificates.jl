@@ -1,10 +1,14 @@
 module AcsCertificates
 
 using PyCall, ScikitLearn
+import Conda
+
 export tightness, physics, SkObject
 
 function __init__()
-    ScikitLearn.Skcore.import_sklearn() # esure sklearn is installed
+    if length(Conda.parseconda(`list scikit-learn`)) == 0
+        ScikitLearn.Skcore.import_sklearn()
+    end # make sure sklearn is installed
     pyimport("warnings").filterwarnings("ignore") # ignore warnings
 end
 

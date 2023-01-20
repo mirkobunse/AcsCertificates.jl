@@ -6,6 +6,7 @@ version = "0.2.1"
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
+Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 CriticalDifferenceDiagrams = "e3dcb5d8-23d5-4a0a-a175-b3f280ae1849"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
