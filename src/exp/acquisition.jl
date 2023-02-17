@@ -16,7 +16,6 @@ function acquisition(config_path, results_path)
     config["data"] = repository[!, "name"] # replace query with result
 
     # additional patches for the configuration
-    config["pY_tst"] = _logspace(config["pY_tst"]) # _logspace is defined in src/exp/tightness.jl
     config["rskf"]["n_splits"] = 3 # training, validation, and testing
     config["sample_size_multiplier"] = config["rskf"]["n_splits"] # the effective n_samples when a mean is plotted
 
@@ -30,13 +29,23 @@ end
 # the actual expansion is filtered and further patched
 function _expand_acquisition(config)
     expansion = Dict{String,Any}[]
-    for c in expand(config, "data", "strategy", "clf", "weight", "pY_tst", "loss", "delta", "epsilon")
+    for c in expand(config, "data", "strategy", "clf", "weight", "pY_tst", "estimate_pY_T", "loss", "delta", "epsilon")
         if c["data"] == "fact_imbalanced"
             continue # ignore the imbalanced subsample; subsample custom pY_tst instances
         end
+        if c["strategy"] == "proportional_estimate"
+            c["estimate_pY_T"] = (c["estimate_pY_T"][1][1:1], c["estimate_pY_T"][2][1])
+        end
+        if !(contains(c["strategy"], "certification") || c["strategy"] == "proportional_estimate")
+            c["estimate_pY_T"] = nothing
+        end
+        c["name"] = c["strategy"]
+        if contains(c["strategy"], "certification") || c["strategy"] == "proportional_estimate"
+            c["name"] = c["name"] * "_" * c["estimate_pY_T"][1]
+        end
         push!(expansion, c)
     end
-
+    unique!(expansion)
     # prepare the progress bar
     n_steps = *(
         length(expansion),
@@ -101,7 +110,7 @@ function _acquisition(config)
         w_trn = _sample_weight(w_y, y_trn) # _sample_weight from src/exp/tightness.jl
 
         # the first batch is uniformly sampled
-        i_trn = Data._subsample_maj(y_trn, floor(Int, config["batchsize"]/2))
+        i_trn = Data._subsample_maj(y_trn, floor(Int, config["initial_trainingsize"]/2))
 
         # the ACS data acquisition loop
         for batch in 1:config["n_batches"]
@@ -116,7 +125,6 @@ function _acquisition(config)
             # 2) store and log information
             push!(df, [i_rskf, batch, m_trn[2], m_trn[1], L_tst])
             _progress_acquisition!(config)
-            # @info "Iteration complete" strategy=config["strategy"] batch m_trn L_tst
 
             # 3) acquire new data
             if batch < config["n_batches"]
@@ -145,7 +153,7 @@ function _acquisition(config)
     end # rskf
 
     # update the results storage with information on the current trial
-    for column in [ "data", "strategy", "clf", "weight", "pY_tst", "loss", "delta", "epsilon" ]
+    for column in [ "data", "name", "clf", "weight", "pY_tst", "loss", "delta", "epsilon" ]
         df[!, column] .= config[column]
     end
     return df
@@ -156,6 +164,10 @@ _m_d(L, y_h, y, w_y, config) =
         return fill(config["batchsize"] / 2, 2) # = (N/2, N/2)
     elseif config["strategy"] == "proportional"
         p_d = [1-config["pY_tst"], config["pY_tst"]] # desired class proportions
+        m_d = p_d .* (length(y) + config["batchsize"]) # desired number of samples
+    elseif config["strategy"] == "proportional_estimate"
+        mean = config["estimate_pY_T"][2][1]
+        p_d = [1-mean, mean] # desired class proportions
         m_d = p_d .* (length(y) + config["batchsize"]) # desired number of samples
         return m_d - Data._m_y(y) # what to acquire
     elseif config["strategy"] == "inverse"
@@ -190,7 +202,9 @@ _m_d(L, y_h, y, w_y, config) =
             allow_onesided=false, # acquisition certificates must be two-sided
             n_trials_extra=7 # allow more trials if 3 random initializations fail
         )
-        α, β = beta_parameters(config["pY_tst"], config["pY_tst"])
+        mean = config["estimate_pY_T"][2][1]
+        var = config["estimate_pY_T"][2][2]
+        α, β = beta_parameters(mean, var)
         return suggest_acquisition(c, config["batchsize"], α, β)
     else
         throw(ValueError("Unknown strategy \"$strategy\""))

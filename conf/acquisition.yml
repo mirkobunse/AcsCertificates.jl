@@ -12,17 +12,29 @@ strategy:
   - improvement # Lomasky et al: utility ∝ improvement in class-wise accuracy
   - redistriction # Lomasky et al: utility ∝ number of samples for which the prediction changes
   - proportional # Lomasky et al: utility ∝ pY_tst
-  # - uniform # Lomasky et al: utility ∝ const
+  - proportional_estimate
+  - uniform # Lomasky et al: utility ∝ const
 
 # how many batches of which size to acquire during the ACS loop
-batchsize: 50
+batchsize: 30
 n_batches: 10
+initial_trainingsize: 60
 
 # how to sub-sample the test set
-pY_tst:
-  l: 0.1 # lowest p_tst(Y)
-  u: 0.3 # largest p_tst(Y)
-  n: 2 # number of logarithmically equidistant steps
+pY_tst: 0.8  # [1-pY_tst, pY_tst]
+
+estimate_pY_T:
+  A_low: [0.8, 0.05] # pY_T = [0.2, 0.8]
+
+  A_high: [0.8, 0.1]
+
+  B_low: [0.9, 0.05]
+
+  B_high: [0.9, 0.1]
+
+  C_low: [0.7, 0.05]
+
+  C_high: [0.7, 0.1]
 
 # which classifiers to train
 clf:
