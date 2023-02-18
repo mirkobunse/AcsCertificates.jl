@@ -89,7 +89,7 @@ and generate a LaTeX table from the results.
 function acquisition(config_path, output_path;
         results_path = "plot/.acquisition.csv")
     Experiments.acquisition(config_path, results_path)
-    Plots.acquisition(results_path, output_path)
+    # Plots.acquisition(results_path, output_path)
 end
 
 

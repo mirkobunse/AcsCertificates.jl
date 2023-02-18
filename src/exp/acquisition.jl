@@ -165,6 +165,7 @@ _m_d(L, y_h, y, w_y, config) =
     elseif config["strategy"] == "proportional"
         p_d = [1-config["pY_tst"], config["pY_tst"]] # desired class proportions
         m_d = p_d .* (length(y) + config["batchsize"]) # desired number of samples
+        return m_d - Data._m_y(y)
     elseif config["strategy"] == "proportional_estimate"
         mean = config["estimate_pY_T"][2][1]
         p_d = [1-mean, mean] # desired class proportions
