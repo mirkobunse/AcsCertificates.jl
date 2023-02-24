@@ -9,7 +9,12 @@ function acquisition(filename::String, strategy_selection::Vector{String};
     df = CSV.read(results_path, DataFrame)
     idx = map(strategy -> strategy ∈ strategy_selection ? true : false, df[!, :name])
     df = df[idx, :]
+    df[!, "pY"] = df[!, "N_min"] ./ (df[!, "N_min"] .+ df[!, "N_maj"])
 
+    df[!, :name] = map(x -> _mapping_names(x), df[!, :name])
+    gid = [:batch, :clf, :weight, :loss, :delta, :epsilon]
+    _bar_graph(df, base_output_dir * filename * "_pYS.tex"; gid=gid)
+    
     # similarities between strategies
     df[!, :pY_trn] = df[!, :N_min] ./ (df[!, :N_min] .+ df[!, :N_maj])
     df[!, :kl_unif] = _kl.(df[!, :pY_trn], .5)
@@ -35,7 +40,7 @@ function acquisition(filename::String, strategy_selection::Vector{String};
     )
     df = semijoin(df, cnt, on=[:data, :batch, :pY_tst])
     df[!, :name] = map(x -> _mapping_names(x), df[!, :name])
-
+    
     _plot_critical_diagram(df, base_output_dir * filename * "_CD.tex", count_strategies; gid=gid)
     _plot_kl_diagram(df, base_output_dir *  filename * "_KL.tex"; gid=gid)
 end
@@ -43,6 +48,45 @@ end
 # scalar version for binary classification
 _kl(p, q) = Distances.kl_divergence([p, 1-p], [q, 1-q])
 
+function _bar_graph(df, output_path; gid=[:batch, :clf, :loss, :delta])
+  
+    plot = Axis(style = join([
+        "title={}",
+        "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
+        "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
+        "xtick={1,3,5,7}",
+        "ylabel={\$p_\\mathcal{S}\$}",
+        "xlabel={ACS-Batch}"
+    ], ", "))
+    for (key, sdf) in pairs(groupby(df, [:name]))
+        sdf = combine(
+            groupby(
+                sdf[sdf[!, :batch].<=8, :],
+                vcat(gid, [:name])
+            ),
+            :pY => StatsBase.mean => :pY
+        )
+        push!(plot, PGFPlots.Plots.Linear(
+            sdf[!, :batch],
+            sdf[!, :pY],
+            legendentry=string(key.name)
+        ))
+    end
+
+    PGFPlots.resetPGFPlotsPreamble()
+    PGFPlots.pushPGFPlotsPreamble(join([
+        "\\usepackage{amsmath}",
+        "\\usepackage{amssymb}",
+        "\\definecolor{tu01}{HTML}{84B818}",
+        "\\definecolor{tu02}{HTML}{D18B12}",
+        "\\definecolor{tu03}{HTML}{1BB5B5}",
+        "\\definecolor{tu04}{HTML}{F85A3E}",
+        "\\definecolor{tu05}{HTML}{4B6CFC}",
+        "\\definecolor{chartreuse(traditional)}{rgb}{0.87, 1.0, 0.0}"
+    ], "\n"))
+
+    PGFPlots.save(output_path, plot)
+end
 
 function _plot_critical_diagram(df, output_path, count_strategies; gid=[:batch, :clf, :loss, :delta])
     sequence = Pair{String, Vector{Pair{String, Vector}}}[]

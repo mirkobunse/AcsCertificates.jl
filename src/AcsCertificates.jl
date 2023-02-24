@@ -86,7 +86,7 @@ end
 Conduct the acquisition experiment from our IAL workshop submission
 and generate a LaTeX table from the results.
 """
-function acquisition(config_path, output_path;
+function acquisition(config_path;
         results_path = "plot/.acquisition.csv")
     Experiments.acquisition(config_path, results_path)
     # Plots.acquisition(results_path, output_path)
