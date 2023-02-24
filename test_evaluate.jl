@@ -5,7 +5,7 @@ using DataFrames
 using CSV
 
 mean = 0.8
-sd = 0.02
+sd = 0.05 #standardabweichung
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
 X = collect(range(0.0, 1.0, length=500))
@@ -16,10 +16,8 @@ Y = map(x -> Distributions.cdf(d, x), X)
 fig = plot(X,Y)
 savefig(fig, "A_low_cdf")
 @info "mean(d) = $(Distributions.mean(d))"
-@info "var(d) = $(Distributions.var(d))"
+@info "sd(d) = $(sqrt(Distributions.var(d)))"
 
-
-mean = 0.8
 sd = 0.2
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
@@ -34,7 +32,7 @@ savefig(fig, "A_high_cdf")
 @info "var(d) = $(Distributions.var(d))"
 
 mean = 0.9
-sd = 0.02
+sd = 0.05
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
 X = collect(range(0.0, 1.0, length=500))
@@ -47,9 +45,7 @@ savefig(fig, "B_low_cdf")
 @info "mean(d) = $(Distributions.mean(d))"
 @info "var(d) = $(Distributions.var(d))"
 
-
-mean = 0.9
-sd = 0.2
+sd = 0.1
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
 X = collect(range(0.0, 1.0, length=500))
@@ -63,7 +59,7 @@ savefig(fig, "A_low_cdf")
 @info "var(d) = $(Distributions.var(d))"
 
 mean = 0.7
-sd = 0.02
+sd = 0.05
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
 X = collect(range(0.0, 1.0, length=500))
@@ -76,8 +72,7 @@ savefig(fig, "C_low_cdf")
 @info "mean(d) = $(Distributions.mean(d))"
 @info "var(d) = $(Distributions.var(d))"
 
-mean = 0.7
-sd = 0.2
+sd = 0.3
 a,b = AcsCertificates.Certificates.beta_parameters(1-mean, sd)
 d = Distributions.Beta(a, b)
 X = collect(range(0.0, 1.0, length=500))

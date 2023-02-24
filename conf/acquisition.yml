@@ -24,17 +24,17 @@ initial_trainingsize: 60
 pY_tst: 0.8  # [1-pY_tst, pY_tst]
 
 estimate_pY_T:
-  A_low: [0.8, 0.02] # pY_T = [0.2, 0.8]
+  A_low: [0.8, 0.05] # pY_T = [0.2, 0.8]
 
   A_high: [0.8, 0.2]
 
-  B_low: [0.9, 0.02]
+  B_low: [0.9, 0.05]
 
-  B_high: [0.9, 0.2]
+  B_high: [0.9, 0.1]
 
-  C_low: [0.7, 0.02]
+  C_low: [0.7, 0.05]
 
-  C_high: [0.7, 0.2]
+  C_high: [0.7, 0.3]
 
 # which classifiers to train
 clf:
