@@ -13,7 +13,8 @@ function acquisition(filename::String, strategy_selection::Vector{String};
 
     df[!, :name] = map(x -> _mapping_names(x), df[!, :name])
     gid = [:batch, :clf, :weight, :loss, :delta, :epsilon]
-    _bar_graph(df, base_output_dir * filename * "_pYS.tex"; gid=gid)
+    _bar_graph(df, base_output_dir * filename * "_pY_S.tex"; gid=gid)
+    _batch_pY(df, base_output_dir * filename * "_pY_batch.tex"; gid=gid)
     
     # similarities between strategies
     df[!, :pY_trn] = df[!, :N_min] ./ (df[!, :N_min] .+ df[!, :N_maj])
@@ -88,6 +89,60 @@ function _bar_graph(df, output_path; gid=[:batch, :clf, :loss, :delta])
     PGFPlots.save(output_path, plot)
 end
 
+function _batch_pY(df, output_path; gid=[:batch, :clf, :loss, :delta])
+  
+    plot = Axis(style = join([
+        "title={}",
+        "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
+        "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
+        "xtick={1,3,5,7,9}",
+        "ylabel={Batch pY}",
+        "xlabel={ACS-Batch}"
+    ], ", "))
+    for (key, sdf) in pairs(groupby(df, [:name]))
+        
+        sdf = combine(
+            groupby(
+                sdf[sdf[!, :batch].<=10, :],
+                vcat(gid, [:name])
+            ),
+            :N_min => StatsBase.mean => :N_min,
+            :N_maj => StatsBase.mean => :N_maj
+        )
+        batch_pY::Vector{Float64} = []
+        for i in 1:nrow(sdf)
+           if i == 1
+                push!(batch_pY, sdf[i, :N_min] ./ (sdf[i, :N_min] + sdf[i, :N_maj]))
+           else
+                N_min_batch = sdf[i, :N_min] - sdf[i-1, :N_min]
+                N_maj_batch = sdf[i, :N_maj] - sdf[i-1, :N_maj]
+                push!(batch_pY, N_min_batch ./ (N_min_batch + N_maj_batch))
+           end
+        end
+        
+        sdf[!, :batch_pY] = batch_pY
+        push!(plot, PGFPlots.Plots.Linear(style="ybar",
+            sdf[!, :batch],
+            sdf[!, :batch_pY],
+            legendentry=string(key.name)
+        ))
+        
+    end
+    PGFPlots.resetPGFPlotsPreamble()
+    PGFPlots.pushPGFPlotsPreamble(join([
+        "\\usepackage{amsmath}",
+        "\\usepackage{amssymb}",
+        "\\definecolor{tu01}{HTML}{84B818}",
+        "\\definecolor{tu02}{HTML}{D18B12}",
+        "\\definecolor{tu03}{HTML}{1BB5B5}",
+        "\\definecolor{tu04}{HTML}{F85A3E}",
+        "\\definecolor{tu05}{HTML}{4B6CFC}",
+        "\\definecolor{chartreuse(traditional)}{rgb}{0.87, 1.0, 0.0}"
+    ], "\n"))
+
+    PGFPlots.save(output_path, plot)
+end
+
 function _plot_critical_diagram(df, output_path, count_strategies; gid=[:batch, :clf, :loss, :delta])
     sequence = Pair{String, Vector{Pair{String, Vector}}}[]
     for (key, sdf) in pairs(groupby(df, gid))
@@ -146,7 +201,7 @@ function _plot_kl_diagram(df, output_path; gid=[:batch, :clf, :loss, :delta])
         "title={KL-Divergenz nach \$p_\\mathcal{T}=0.8\$}",
         "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
         "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
-        "xtick={1,3,5,7}"
+        "xtick={1,3,5,7,9}"
     ], ", "))
     for (key, sdf) in pairs(groupby(df, vcat(setdiff(gid, [:batch]), [:name])))
         if key.name == "proportional"
@@ -154,7 +209,7 @@ function _plot_kl_diagram(df, output_path; gid=[:batch, :clf, :loss, :delta])
         end
         sdf = combine(
             groupby(
-                sdf[sdf[!, :batch].<=8, :],
+                sdf[sdf[!, :batch].<=10, :],
                 vcat(gid, [:name])
             ),
             :kl_prop => StatsBase.mean => :kl_prop,
