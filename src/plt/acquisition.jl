@@ -55,14 +55,14 @@ function _bar_graph(df, output_path; gid=[:batch, :clf, :loss, :delta])
         "title={}",
         "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
         "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
-        "xtick={1,3,5,7}",
+        "xtick={1,2,3,4,5,6,7,8,9,10}",
         "ylabel={\$p_\\mathcal{S}\$}",
         "xlabel={ACS-Batch}"
     ], ", "))
     for (key, sdf) in pairs(groupby(df, [:name]))
         sdf = combine(
             groupby(
-                sdf[sdf[!, :batch].<=8, :],
+                sdf[sdf[!, :batch].<=10, :],
                 vcat(gid, [:name])
             ),
             :pY => StatsBase.mean => :pY
@@ -95,7 +95,7 @@ function _batch_pY(df, output_path; gid=[:batch, :clf, :loss, :delta])
         "title={}",
         "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
         "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
-        "xtick={1,3,5,7,9}",
+        "xtick={1,2,3,4,5,6,7,8,9,10}",
         "ylabel={Batch pY}",
         "xlabel={ACS-Batch}"
     ], ", "))
@@ -147,7 +147,7 @@ function _plot_critical_diagram(df, output_path, count_strategies; gid=[:batch, 
     sequence = Pair{String, Vector{Pair{String, Vector}}}[]
     for (key, sdf) in pairs(groupby(df, gid))
         n_data = length(unique(sdf[!, :data]))
-        if key.batch ∉ 2:9
+        if key.batch ∉ 2:10
             continue
         end
         @info "Batch $(key.batch) is based on $(n_data) data sets"
@@ -158,8 +158,8 @@ function _plot_critical_diagram(df, output_path, count_strategies; gid=[:batch, 
     plot = CriticalDifferenceDiagrams.plot(sequence...)
     plot.style = join([
         "y dir=reverse",
-        "ytick={1,2,3,4,5,6,7,8}",
-        "yticklabels={2,3,4,5,6,7,8,9}",
+        "ytick={1,2,3,4,5,6,7,8,9}",
+        "yticklabels={2,3,4,5,6,7,8,9,10}",
         "ylabel={ACS-Batch}",
         "xlabel={avg. Rang}",
         "ylabel style={font=\\small}",
@@ -201,7 +201,7 @@ function _plot_kl_diagram(df, output_path; gid=[:batch, :clf, :loss, :delta])
         "title={KL-Divergenz nach \$p_\\mathcal{T}=0.8\$}",
         "legend style={draw=none,fill=none,at={(1.1,.5)},anchor=west,row sep=.25em}",
         "cycle list={{tu01,mark=*},{tu02,mark=square*},{tu03,mark=triangle*},{tu04,mark=diamond*},{tu05,mark=pentagon*}}",
-        "xtick={1,3,5,7,9}"
+        "xtick={1,2,3,4,5,6,7,8,9,10}"
     ], ", "))
     for (key, sdf) in pairs(groupby(df, vcat(setdiff(gid, [:batch]), [:name])))
         if key.name == "proportional"
